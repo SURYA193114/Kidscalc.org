@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RUSH.X — Premium Calculator</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0c29;
+      --card: #1a1a2e;
+      --accent1: #00dbde;
+      --accent2: #fc00ff;
+      --accent3: #f6d365;
+      --accent4: #fda085;
+      --shadow: 0 20px 40px rgba(0,0,0,0.3);
+      --text: #e6e6e6;
+      --button: #16213e;
+      --aura1: rgba(0, 219, 222, 0.6);
+      --aura2: rgba(252, 0, 255, 0.6);
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(to right, #0f0c29, #302b63, #24243e);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+
+    .logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 10;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 10px rgba(0, 219, 222, 0.3);
+      letter-spacing: 3px;
+    }
+    .logo .x {
+      color: #f6d365;
+      text-shadow: 0 0 15px #f6d365;
+    }
+
+    .aura {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.7;
+      z-index: -1;
+      animation: floatAura 15s infinite ease-in-out;
+    }
+    .aura-1 {
+      width: 300px;
+      height: 300px;
+      background: var(--aura1);
+      top: 20%;
+      left: 10%;
+    }
+    .aura-2 {
+      width: 400px;
+      height: 400px;
+      background: var(--aura2);
+      bottom: 10%;
+      right: 10%;
+    }
+    .aura-3 {
+      width: 200px;
+      height: 200px;
+      background: var(--accent3);
+      top: 40%;
+      right: 20%;
+      animation-delay: 2s;
+    }
+
+    @keyframes floatAura {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(50px, 50px); }
+      50% { transform: translate(-50px, 30px); }
+      75% { transform: translate(30px, -50px); }
+    }
+
+    .wrap {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    .card-3d {
+      width: 400px;
+      max-width: 90vw;
+      perspective: 1200px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: rgba(26, 26, 46, 0.8);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease;
+      will-change: transform;
+      position: relative;
+      overflow: visible;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .display-container {
+      border: 3px solid rgba(0, 219, 222, 0.3);
+      border-radius: 16px;
+      padding: 5px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      box-shadow: inset 0 0 20px rgba(0, 219, 222, 0.1);
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .display {
+      border-radius: 12px;
+      padding: 20px;
+      background: rgba(10, 10, 30, 0.6);
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+      transform: translateZ(40px);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .display::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(0, 219, 222, 0.1) 0%,
+        rgba(252, 0, 255, 0.1) 100%
+      );
+      z-index: -1;
+    }
+
+    .input-display {
+      font-size: 20px;
+      color: rgba(230,230,230,0.8);
+      text-align: right;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-right: 6px;
+      margin-bottom: 10px;
+    }
+
+    .result-display {
+      font-size: 32px;
+      font-weight: normal;
+      text-align: right;
+      color: var(--text);
+      text-shadow: 0 0 10px rgba(0, 219, 222, 0.5);
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-right: 6px;
+    }
+
+    .keys {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      transform: translateZ(30px);
+    }
+
+    button.key {
+      background: rgba(22, 33, 62, 0.7);
+      border: 0;
+      border-radius: 12px;
+      padding: 16px 8px;
+      font-size: 18px;
+      font-weight: normal;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(.2,.9,.3,1);
+      user-select: none;
+      outline: none;
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    button.key::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 10px;
+      padding: 2px;
+      background: linear-gradient(
+        135deg,
+        var(--accent1) 0%,
+        var(--accent2) 50%,
+        var(--accent3) 100%
+      );
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    button.key:active { 
+      transform: translateY(4px) scale(0.98); 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+    }
+
+    button.op { 
+      background: rgba(252, 0, 255, 0.2);
+      color: #fc00ff;
+      text-shadow: 0 0 8px rgba(252, 0, 255, 0.7);
+    }
+    button.op::before {
+      background: linear-gradient(
+        135deg,
+        var(--accent2) 0%,
+        var(--accent4) 100%
+      );
+    }
+
+    button.accent { 
+      background: rgba(0, 219, 222, 0.2);
+      color: #00dbde;
+      text-shadow: 0 0 8px rgba(0, 219, 222, 0.7);
+    }
+    button.accent::before {
+      background: linear-gradient(
+        135deg,
+        var(--accent1) 0%,
+        var(--accent3) 100%
+      );
+    }
+
+    .anime-char {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      bottom: -20px;
+      right: -20px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="40" r="30" fill="%23f6d365"/><circle cx="40" cy="35" r="5" fill="%231a1a2e"/><circle cx="60" cy="35" r="5" fill="%231a1a2e"/><path d="M45 50 Q50 60 55 50" stroke="%231a1a2e" stroke-width="3" fill="none"/></svg>');
+      background-size: contain;
+      z-index: 5;
+      filter: drop-shadow(0 0 10px rgba(246, 211, 101, 0.7));
+      transform: translateZ(50px);
+      animation: float 3s infinite ease-in-out;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateZ(50px); }
+      50% { transform: translateY(-10px) translateZ(50px); }
+    }
+
+    .history-panel {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 14px;
+      max-height: 120px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 10px rgba(0,219,222,0.3);
+      display: none;
+    }
+    
+    .history-panel.show {
+      display: block;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    
+    .history-item {
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+    
+    .key:hover {
+      box-shadow: 0 0 10px var(--accent1), 0 0 20px var(--accent2);
+    }
+    
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    @media (max-width:600px){
+      .wrap{ padding:10px; }
+      .keys{ gap:8px; }
+      button.key{ padding:12px 6px; font-size:16px; }
+      .result-display { font-size:28px; }
+      .input-display { font-size:18px; }
+      .logo {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+      }
+      .display {
+        min-height: 100px;
+        padding: 15px;
+      }
+    }
+
+    button.key:focus{ 
+      box-shadow:0 0 0 3px rgba(0, 219, 222, 0.5); 
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+<div class="aura aura-1"></div>
+<div class="aura aura-2"></div>
+<div class="aura aura-3"></div>
+
+<div class="wrap">
+  <div class="logo">RUSH.<span class="x">X</span></div>
+
+  <div class="card-3d">
+    <div class="card" id="calculator">
+      <div class="anime-char" aria-hidden="true"></div>
+
+      <div class="display-container">
+        <div class="display">
+          <div class="input-display" id="inputDisplay">0</div>
+          <div class="result-display" id="resultDisplay">0</div>
+        </div>
+      </div>
+
+      <div class="keys" id="keys">
+        <button class="key" id="clear">C</button>
+        <button class="key" id="back">⌫</button>
+        <button class="key" id="paren">( )</button>
+        <button class="key op" data-value="/">÷</button>
+
+        <button class="key" data-value="7">7</button>
+        <button class="key" data-value="8">8</button>
+        <button class="key" data-value="9">9</button>
+        <button class="key op" data-value="*">×</button>
+
+        <button class="key" data-value="4">4</button>
+        <button class="key" data-value="5">5</button>
+        <button class="key" data-value="6">6</button>
+        <button class="key op" data-value="-">-</button>
+
+        <button class="key" data-value="1">1</button>
+        <button class="key" data-value="2">2</button>
+        <button class="key" data-value="3">3</button>
+        <button class="key op" data-value="+">+</button>
+
+        <button class="key" data-value="0">0</button>
+        <button class="key" data-value=".">.</button>
+        <button class="key" id="equals">=</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const inputDisplay = document.getElementById('inputDisplay');
+  const resultDisplay = document.getElementById('resultDisplay');
+  const keys = document.getElementById('keys');
+  const calc = document.getElementById('calculator');
+  
+  let currentInput = '0';
+  let currentExpression = '';
+  let lastResult = null;
+
+  function updateDisplays() {
+    inputDisplay.textContent = currentInput || '0';
+    inputDisplay.scrollLeft = inputDisplay.scrollWidth;
+    
+    const result = evaluateExpression(currentExpression);
+    resultDisplay.textContent = result === null ? '0' : result;
+    resultDisplay.scrollLeft = resultDisplay.scrollWidth;
+  }
+
+  function evaluateExpression(exp) {
+    if(!exp) return null;
+    
+    try {
+      // Replace visual symbols with math operators
+      exp = exp.replace(/×/g, '*').replace(/÷/g, '/');
+      
+      // Safety check
+      if(!/^[0-9+\-*/().\s]*$/.test(exp)) return 'Error';
+      
+      const result = new Function('return (' + exp + ')')();
+      
+      if(typeof result !== 'number' || !isFinite(result)) return 'Error';
+      
+      // Formatting
+      if(Math.abs(result) > 1e12 || Math.abs(result) < 1e-6) {
+        return result.toExponential(8);
+      }
+      
+      const str = result.toString();
+      return str.indexOf('.') !== -1 ? 
+        str.replace(/(\.\d*?[1-9])0+$/, "$1").replace(/\.$/, '') : 
+        str;
+    } catch {
+      return 'Error';
+    }
+  }
+
+  function canAddDot() {
+    const parts = currentInput.split(/[\+\-\*\/\(\)]/);
+    const lastPart = parts[parts.length - 1];
+    return !lastPart.includes('.');
+  }
+
+  function createParticles(x, y) {
+    for(let i = 0; i < 5; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.background = `hsl(${Math.random()*360}, 100%, 60%)`;
+      particle.style.width = particle.style.height = `${Math.random()*6+4}px`;
+      document.body.appendChild(particle);
+      
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.random() * 40 + 20;
+      const dx = Math.cos(angle) * radius;
+      const dy = Math.sin(angle) * radius;
+      
+      particle.style.left = `${x}px`;
+      particle.style.top = `${y}px`;
+      
+      particle.animate([
+        { transform: 'translate(0, 0)', opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }
+      ], {
+        duration: 600,
+        easing: 'ease-out'
+      }).onfinish = () => particle.remove();
+    }
+  }
+
+  keys.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if(!btn) return;
+    
+    const value = btn.dataset.value;
+    createParticles(e.clientX, e.clientY);
+
+    if(btn.id === 'equals') {
+      const result = evaluateExpression(currentExpression);
+      if(result !== 'Error' && result !== null) {
+        lastResult = result;
+        currentInput = result;
+        currentExpression = result;
+      }
+      updateDisplays();
+      return;
+    }
+    
+    if(btn.id === 'clear') {
+      currentInput = '0';
+      currentExpression = '';
+      lastResult = null;
+      updateDisplays();
+      return;
+    }
+    
+    if(btn.id === 'back') {
+      currentInput = currentInput.length > 1 ? currentInput.slice(0, -1) : '0';
+      currentExpression = currentExpression.length > 1 ? currentExpression.slice(0, -1) : '';
+      updateDisplays();
+      return;
+    }
+    
+    if(btn.id === 'paren') {
+      const open = (currentExpression.match(/\(/g) || []).length;
+      const close = (currentExpression.match(/\)/g) || []).length;
+      const lastChar = currentExpression.slice(-1);
+      
+      if(open === close || /[\+\-\*\/\(]/.test(lastChar)) {
+        currentInput += '(';
+        currentExpression += '(';
+      } else {
+        currentInput += ')';
+        currentExpression += ')';
+      }
+      updateDisplays();
+      return;
+    }
+    
+    if(value === '.' && !canAddDot()) return;
+    
+    if(currentInput === '0' && value.match(/[0-9]/)) {
+      currentInput = value;
+    } else {
+      currentInput += value;
+    }
+    
+    currentExpression += value;
+    updateDisplays();
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter') {
+      e.preventDefault();
+      document.getElementById('equals').click();
+      return;
+    }
+    if(e.key === 'Backspace') {
+      e.preventDefault();
+      document.getElementById('back').click();
+      return;
+    }
+    if(e.key === 'Escape') {
+      e.preventDefault();
+      document.getElementById('clear').click();
+      return;
+    }
+    if(e.key === '.' && !canAddDot()) return;
+    if(e.key.match(/^[0-9+\-*/().]$/)) {
+      currentInput += e.key;
+      currentExpression += e.key;
+      updateDisplays();
+    }
+  });
+
+  calc.addEventListener('mousemove', (e) => {
+    const rect = calc.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / rect.width;
+    const dy = (e.clientY - cy) / rect.height;
+    calc.style.transform = `rotateX(${-dy * 8}deg) rotateY(${dx * 12}deg) translateZ(20px)`;
+  });
+
+  calc.addEventListener('mouseleave', () => {
+    calc.style.transform = '';
+  });
+
+  // Initialize
+  updateDisplays();
+  document.querySelectorAll('button.key').forEach(btn => btn.tabIndex = 0);
+})();
+</script>
+  <script type="text/javascript">
+	atOptions = {
+		'key' : '236ec9dc26c69c2753ff54a1595aa200',
+		'format' : 'iframe',
+		'height' : 60,
+		'width' : 468,
+		'params' : {}
+	};
+</script>
+<script type="text/javascript" src="//www.highperformanceformat.com/236ec9dc26c69c2753ff54a1595aa200/invoke.js"></script>
+</body>
+</html>
